@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // ===== DATA PRODUK AWAL =====
-    let products = [
+    // ===== DATA PRODUK AWAL (DEFAULT) =====
+    const DEFAULT_PRODUCTS = [
         {
             id: 'p1',
             name: 'HOLO ALL CHAR FFM',
@@ -30,8 +30,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     ];
 
+    // ===== LOAD DATA DARI LOCALSTORAGE =====
+    function loadProducts() {
+        const saved = localStorage.getItem('zerModzProducts');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                // Konversi timerEnd dari string ke Date object
+                parsed.forEach(p => {
+                    if (p.timerEnd) p.timerEnd = new Date(p.timerEnd);
+                });
+                return parsed;
+            } catch (e) {
+                return [...DEFAULT_PRODUCTS];
+            }
+        }
+        return [...DEFAULT_PRODUCTS];
+    }
+
+    // ===== SAVE DATA KE LOCALSTORAGE =====
+    function saveProducts() {
+        localStorage.setItem('zerModzProducts', JSON.stringify(products));
+    }
+
+    // ===== RESET KE DEFAULT =====
+    function resetToDefault() {
+        products = [...DEFAULT_PRODUCTS.map(p => ({...p}))];
+        saveProducts();
+        renderProducts();
+    }
+
+    // ===== DATA PRODUK (GLOBAL) =====
+    let products = loadProducts();
+
     // ===== VARIABEL GLOBAL =====
-    let offset = 0;
+    let offset = parseInt(localStorage.getItem('zerModzOffset')) || 0;
     let timerInterval = null;
 
     // ===== REAL TIME CLOCK =====
@@ -61,20 +94,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== UPDATE TIMER =====
     function startProductTimers() {
         if (timerInterval) clearInterval(timerInterval);
+        
         timerInterval = setInterval(() => {
             let needRender = false;
+            let needSave = false;
             const now = new Date();
+            
             products.forEach(product => {
                 if (product.timerEnd) {
                     const timeLeft = product.timerEnd - now;
+                    
                     if (timeLeft <= 0) {
                         product.newPrice = product.oldPrice;
                         product.discount = 0;
                         product.timerEnd = null;
                         needRender = true;
+                        needSave = true;
                     }
                 }
             });
+            
+            if (needSave) {
+                saveProducts();
+            }
+            
             if (needRender) {
                 renderProducts();
             } else {
@@ -100,10 +143,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== FUNGSI WA ORDER (REAL-TIME) =====
+    // ===== FUNGSI WA ORDER =====
     function handleOrder(productName, productPrice) {
         const phoneNumber = '6289653938936';
-        // Format pesan: Halo kak saya mau order NAMA PRODUK (Rp HARGA)
         const message = encodeURIComponent(`Halo kak saya mau order ${productName} (Rp ${productPrice.toLocaleString()})`);
         window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
     }
@@ -118,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 product.newPrice = product.oldPrice;
                 product.discount = 0;
                 product.timerEnd = null;
+                saveProducts();
             }
 
             const card = document.createElement('div');
@@ -151,13 +194,11 @@ document.addEventListener('DOMContentLoaded', function() {
             grid.appendChild(card);
         });
 
-        // Event listener ORDER - PAKAI DATA-PRODUCT-ID
         document.querySelectorAll('.order-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 const productId = this.dataset.productId;
                 const product = products.find(p => p.id === productId);
                 if (product) {
-                    // Kirim NAMA PRODUK + HARGA TERBARU (newPrice)
                     handleOrder(product.name, product.newPrice);
                 }
             });
@@ -223,9 +264,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="admin-row">
                     <span class="admin-label">MENIT</span>
                     <div class="admin-control">
-                        <input type="number" id="offsetInput" value="0" min="-720" max="720">
+                        <input type="number" id="offsetInput" value="${offset}" min="-720" max="720">
                         <button id="applyOffsetBtn" class="admin-btn">TERAP</button>
                     </div>
+                </div>
+            </div>
+            
+            <!-- RESET KE DEFAULT -->
+            <div class="admin-section">
+                <div class="admin-section-title">⚠️ RESET DATA</div>
+                <div style="display:flex; gap:0.5rem;">
+                    <button id="resetToDefaultBtn" class="admin-btn warn" style="flex:1;">RESET KE AWAL</button>
                 </div>
             </div>
             
@@ -258,11 +307,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="admin-section-title">🔘 EDIT TEKS BUTTON</div>
                 <div id="buttonTextContainer"></div>
             </div>
-            
-            <!-- RESET -->
-            <div class="admin-section">
-                <button id="resetAllBtn" class="admin-btn warn" style="width:100%; padding:0.8rem;">RESET SEMUA PRODUK</button>
-            </div>
         `;
 
         renderProductListForAdmin();
@@ -271,10 +315,14 @@ document.addEventListener('DOMContentLoaded', function() {
         renderProductNameControls();
         renderButtonTextControls();
 
+        // EVENT LISTENERS
         document.getElementById('applyOffsetBtn').addEventListener('click', function() {
             const val = parseInt(document.getElementById('offsetInput').value, 10);
-            if (!isNaN(val)) offset = val;
-            updateClock();
+            if (!isNaN(val)) {
+                offset = val;
+                localStorage.setItem('zerModzOffset', offset);
+                updateClock();
+            }
         });
 
         document.getElementById('addProductBtn').addEventListener('click', function() {
@@ -291,15 +339,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        document.getElementById('resetAllBtn').addEventListener('click', function() {
-            products = products.map(p => ({
-                ...p,
-                newPrice: p.oldPrice,
-                discount: 0,
-                timerEnd: null
-            }));
-            renderProducts();
-            loadAdminPanel();
+        document.getElementById('resetToDefaultBtn').addEventListener('click', function() {
+            if (confirm('Yakin reset ke data awal? Semua perubahan akan hilang!')) {
+                resetToDefault();
+                loadAdminPanel();
+            }
         });
 
         document.getElementById('logoutBtn').addEventListener('click', function() {
@@ -407,9 +451,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== FUNGSI GLOBAL =====
     window.deleteProduct = function(productId) {
-        products = products.filter(p => p.id !== productId);
-        renderProducts();
-        loadAdminPanel();
+        if (confirm('Yakin hapus produk ini?')) {
+            products = products.filter(p => p.id !== productId);
+            saveProducts();
+            renderProducts();
+            loadAdminPanel();
+        }
     };
 
     window.applyDiscTimer = function(productId) {
@@ -434,6 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     product.timerEnd = new Date(new Date().getTime() + totalMs);
                 }
                 
+                saveProducts();
                 renderProducts();
                 loadAdminPanel();
             }
@@ -451,6 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!product.timerEnd) {
                         product.newPrice = newPrice;
                     }
+                    saveProducts();
                     renderProducts();
                     loadAdminPanel();
                 }
@@ -466,6 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const product = products.find(p => p.id === productId);
                 if (product) {
                     product.name = newName;
+                    saveProducts();
                     renderProducts();
                     loadAdminPanel();
                 }
@@ -480,6 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const product = products.find(p => p.id === productId);
             if (product) {
                 product.buttonText = newText;
+                saveProducts();
                 renderProducts();
                 loadAdminPanel();
             }
@@ -497,6 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
             timerEnd: null,
             buttonText: buttonText
         });
+        saveProducts();
         renderProducts();
     }
 
