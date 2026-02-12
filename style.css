@@ -1,4 +1,3 @@
-/* ===== NEO BRUTALISM • OREN PUTIH • FULL VERSION ===== */
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +12,7 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 1.5rem;
-    border: 4px solid #ffffff;
+    border: 4px solid white;
 }
 
 .container {
@@ -23,10 +22,8 @@ body {
     border: 4px solid black;
     box-shadow: 12px 12px 0 rgba(0,0,0,0.2);
     padding: 2rem;
-    position: relative;
 }
 
-/* ===== HEADER SECTION ===== */
 .header {
     display: flex;
     justify-content: space-between;
@@ -34,8 +31,6 @@ body {
     border-bottom: 4px solid black;
     padding-bottom: 1rem;
     margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
 }
 
 .logo {
@@ -45,19 +40,10 @@ body {
     padding: 0.3rem 1.2rem;
     border: 4px solid #ff6b35;
     box-shadow: 8px 8px 0 #ff6b35;
-    letter-spacing: -1px;
 }
 
-.zer {
-    color: white;
-}
-
-.modz {
-    color: #ff6b35;
-    background: white;
-    padding: 0.1rem 0.4rem;
-    margin-left: 0.2rem;
-}
+.zer { color: white; }
+.modz { color: #ff6b35; background: white; padding: 0.1rem 0.4rem; }
 
 .time-panel {
     background: black;
@@ -68,20 +54,8 @@ body {
     text-align: right;
 }
 
-#clock {
-    font-size: 1.8rem;
-    font-weight: 700;
-    display: block;
-    line-height: 1.1;
-    font-family: monospace;
-}
+#clock { font-size: 1.8rem; font-weight: 700; display: block; }
 
-#date {
-    font-size: 0.85rem;
-    opacity: 0.9;
-}
-
-/* ===== ADMIN PROFIL BUTTON ===== */
 .admin-profile {
     display: flex;
     align-items: center;
@@ -92,12 +66,6 @@ body {
     border-radius: 50px;
     cursor: pointer;
     box-shadow: 6px 6px 0 #ff6b35;
-    transition: 0.1s ease;
-}
-
-.admin-profile:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: 8px 8px 0 #ff6b35;
 }
 
 .profile-icon {
@@ -113,14 +81,100 @@ body {
     border-radius: 50%;
 }
 
-.profile-text {
-    color: white;
-    font-weight: 900;
-    font-size: 0.9rem;
-    letter-spacing: 2px;
+.profile-text { color: white; font-weight: 900; }
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
-/* ===== MODAL LOGIN ===== */
+.product {
+    background: white;
+    border: 4px solid black;
+    padding: 1.2rem;
+    box-shadow: 8px 8px 0 black;
+}
+
+.product-name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    border-bottom: 3px solid black;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+}
+
+.product-price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.old-price {
+    font-size: 0.85rem;
+    color: #666;
+    text-decoration: line-through;
+    text-decoration-color: #ff6b35;
+    text-decoration-thickness: 2px;
+}
+
+.new-price {
+    font-size: 1.3rem;
+    font-weight: 900;
+    background: black;
+    color: white;
+    padding: 0.1rem 0.5rem;
+    border: 2px solid #ff6b35;
+}
+
+.discount-badge {
+    background: black;
+    color: #ff6b35;
+    padding: 0.2rem 0.6rem;
+    border: 2px solid white;
+    width: fit-content;
+    font-weight: bold;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.timer-badge {
+    background: #ff6b35;
+    color: black;
+    padding: 0.3rem 0.7rem;
+    border: 2px solid black;
+    width: fit-content;
+    margin-top: 0.3rem;
+    font-weight: 900;
+    border-radius: 40px;
+    font-family: monospace;
+}
+
+.order-btn {
+    background: #ff6b35;
+    border: 3px solid black;
+    color: black;
+    font-size: 0.9rem;
+    font-weight: 900;
+    padding: 0.6rem 1.2rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    box-shadow: 5px 5px 0 black;
+    border-radius: 40px;
+    width: fit-content;
+    align-self: center;
+}
+
+.order-btn:hover {
+    background: black;
+    color: #ff6b35;
+    border-color: #ff6b35;
+    box-shadow: 5px 5px 0 #ff6b35;
+}
+
 .modal {
     position: fixed;
     top: 0;
@@ -132,7 +186,6 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    backdrop-filter: blur(3px);
 }
 
 .modal-content {
@@ -147,24 +200,10 @@ body {
 .modal-header {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    padding: 1.2rem 1.5rem;
+    padding: 1.2rem;
     border-bottom: 3px solid #ff6b35;
     background: #111;
     border-radius: 20px 20px 0 0;
-}
-
-.modal-icon {
-    font-size: 1.8rem;
-    background: #ff6b35;
-    color: black;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 3px solid white;
-    border-radius: 15px;
 }
 
 .modal-title {
@@ -172,47 +211,31 @@ body {
     font-size: 1.4rem;
     font-weight: 900;
     flex: 1;
-    letter-spacing: 3px;
+    margin-left: 0.5rem;
 }
 
 .close-btn {
     color: white;
     font-size: 1.6rem;
-    font-weight: bold;
     cursor: pointer;
     padding: 0.2rem 0.8rem;
     border: 2px solid white;
     border-radius: 40px;
-    transition: 0.1s;
-}
-
-.close-btn:hover {
-    background: #ff6b35;
-    color: black;
-    border-color: #ff6b35;
 }
 
 .modal-body {
     padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1rem;
 }
 
 .modal-body input {
     background: white;
     border: 4px solid black;
     padding: 0.8rem 1.2rem;
-    font-size: 1rem;
-    font-weight: bold;
-    width: 100%;
     border-radius: 50px;
-}
-
-.modal-body input:focus {
-    outline: none;
-    border-color: #ff6b35;
-    box-shadow: 5px 5px 0 #ff6b35;
+    font-size: 1rem;
 }
 
 .modal-body button {
@@ -220,396 +243,17 @@ body {
     border: 4px solid white;
     color: black;
     font-weight: 900;
-    padding: 0.8rem 1rem;
+    padding: 0.8rem;
     font-size: 1.1rem;
     cursor: pointer;
     box-shadow: 7px 7px 0 white;
+    border-radius: 50px;
     letter-spacing: 5px;
-    border-radius: 50px;
-    margin-top: 0.5rem;
-    transition: 0.1s;
 }
 
-.modal-body button:hover {
-    background: black;
-    color: #ff6b35;
-    border-color: #ff6b35;
-    box-shadow: 7px 7px 0 #ff6b35;
-}
+.hidden { display: none !important; }
 
-.login-message {
-    color: #ff6b35;
-    font-size: 0.9rem;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 0.3rem;
+@media (max-width: 800px) {
+    .product-grid { grid-template-columns: 1fr; }
+    .header { flex-direction: column; }
 }
-
-/* ===== PRODUCT GRID ===== */
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.8rem;
-    margin-bottom: 2.5rem;
-}
-
-.product {
-    background: white;
-    border: 4px solid black;
-    padding: 1.5rem 1.2rem;
-    box-shadow: 10px 10px 0 black;
-    transition: 0.1s ease;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-.product:hover {
-    transform: translate(-5px, -5px);
-    box-shadow: 14px 14px 0 #ff6b35;
-    border-color: #ff6b35;
-}
-
-.product-name {
-    font-size: 1.2rem;
-    font-weight: 800;
-    border-bottom: 3px solid black;
-    padding-bottom: 0.6rem;
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-    word-break: break-word;
-    letter-spacing: -0.5px;
-}
-
-.product-price {
-    display: flex;
-    align-items: baseline;
-    gap: 0.8rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.8rem;
-}
-
-.old-price {
-    font-size: 0.9rem;
-    color: #666;
-    text-decoration: line-through;
-    text-decoration-thickness: 3px;
-    text-decoration-color: #ff6b35;
-}
-
-.new-price {
-    font-size: 1.5rem;
-    font-weight: 900;
-    background: black;
-    color: white;
-    padding: 0.2rem 0.7rem;
-    border: 3px solid #ff6b35;
-}
-
-.discount-badge {
-    font-size: 0.8rem;
-    font-weight: bold;
-    background: black;
-    color: #ff6b35;
-    padding: 0.25rem 0.7rem;
-    border: 2px solid white;
-    width: fit-content;
-    margin: 0.5rem 0 0.3rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.timer-badge {
-    font-size: 0.85rem;
-    background: #ff6b35;
-    color: black;
-    padding: 0.3rem 0.8rem;
-    border: 3px solid black;
-    width: fit-content;
-    margin-top: 0.4rem;
-    font-weight: 900;
-    border-radius: 40px;
-    font-family: monospace;
-    letter-spacing: 2px;
-}
-
-.order-btn {
-    background: #ff6b35;
-    border: 4px solid black;
-    color: black;
-    font-size: 1rem;
-    font-weight: 900;
-    padding: 0.7rem 1.5rem;
-    margin-top: 1rem;
-    cursor: pointer;
-    box-shadow: 7px 7px 0 black;
-    transition: 0.07s;
-    letter-spacing: 3px;
-    border-radius: 60px;
-    width: fit-content;
-    align-self: center;
-    text-transform: uppercase;
-}
-
-.order-btn:hover {
-    background: black;
-    color: #ff6b35;
-    border-color: #ff6b35;
-    box-shadow: 7px 7px 0 #ff6b35;
-}
-
-/* ===== ADMIN PANEL ===== */
-.admin-panel-container {
-    margin-top: 2.5rem;
-    background: black;
-    border: 4px solid #ff6b35;
-    box-shadow: 12px 12px 0 white;
-    border-radius: 25px;
-    overflow: hidden;
-}
-
-.admin-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.2rem 1.8rem;
-    background: #111;
-    border-bottom: 3px solid #ff6b35;
-    color: white;
-    font-size: 1.3rem;
-    font-weight: 900;
-    letter-spacing: 2px;
-}
-
-.admin-logout-btn {
-    background: #333;
-    border: 3px solid #ff6b35;
-    color: white;
-    padding: 0.5rem 1.5rem;
-    font-weight: 900;
-    font-size: 0.9rem;
-    cursor: pointer;
-    border-radius: 50px;
-    letter-spacing: 3px;
-    transition: 0.1s;
-}
-
-.admin-logout-btn:hover {
-    background: #ff6b35;
-    color: black;
-    border-color: white;
-}
-
-.admin-panel-body {
-    padding: 1.8rem;
-    background: #0a0a0a;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-/* ===== ADMIN SECTIONS ===== */
-.admin-section {
-    background: #1a1a1a;
-    border: 3px solid #ff6b35;
-    padding: 1.3rem;
-    border-radius: 20px;
-}
-
-.admin-section-title {
-    color: #ff6b35;
-    font-weight: 900;
-    font-size: 1.1rem;
-    margin-bottom: 1.2rem;
-    border-bottom: 3px solid #ff6b35;
-    padding-bottom: 0.6rem;
-    letter-spacing: 2px;
-}
-
-.admin-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #222;
-    padding: 0.8rem 1.2rem;
-    border: 2px solid #ff6b35;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-    margin-bottom: 0.8rem;
-    border-radius: 50px;
-}
-
-.admin-label {
-    color: white;
-    font-weight: 800;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.admin-control {
-    display: flex;
-    gap: 0.6rem;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.admin-control input {
-    background: black;
-    border: 2px solid white;
-    color: white;
-    padding: 0.4rem 0.8rem;
-    width: 80px;
-    font-size: 0.85rem;
-    border-radius: 40px;
-}
-
-.admin-btn {
-    background: #ff6b35;
-    border: 2px solid white;
-    color: black;
-    font-weight: 900;
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-    cursor: pointer;
-    box-shadow: 4px 4px 0 white;
-    letter-spacing: 2px;
-    border-radius: 40px;
-    transition: 0.1s;
-}
-
-.admin-btn:hover {
-    background: black;
-    color: #ff6b35;
-    border-color: #ff6b35;
-    box-shadow: 4px 4px 0 #ff6b35;
-}
-
-.admin-btn.small {
-    padding: 0.3rem 0.8rem;
-    font-size: 0.75rem;
-}
-
-.admin-btn.warn {
-    background: white;
-    border-color: #ff6b35;
-    color: black;
-    box-shadow: 4px 4px 0 #ff6b35;
-}
-
-.admin-btn.warn:hover {
-    background: #ff6b35;
-    color: black;
-    border-color: white;
-    box-shadow: 4px 4px 0 white;
-}
-
-/* ===== PRODUCT LIST ADMIN ===== */
-.product-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #222;
-    padding: 0.7rem 1.2rem;
-    border: 2px solid #ff6b35;
-    margin-bottom: 0.7rem;
-    border-radius: 50px;
-    color: white;
-    font-size: 0.85rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.product-list-item span {
-    word-break: break-word;
-}
-
-/* ===== UTILITY CLASSES ===== */
-.hidden {
-    display: none !important;
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 900px) {
-    .container {
-        padding: 1.5rem;
-    }
-    
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 700px) {
-    body {
-        padding: 1rem;
-    }
-    
-    .container {
-        padding: 1.2rem;
-    }
-    
-    .header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .time-panel {
-        text-align: center;
-    }
-    
-    .product-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .admin-row {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .admin-control {
-        width: 100%;
-        justify-content: flex-start;
-    }
-    
-    .product-list-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes glitch {
-    0% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
-    100% { transform: translate(0); }
-}
-
-.glitch:hover {
-    animation: glitch 0.3s infinite;
-}
-
-/* ===== SCROLLBAR CUSTOM ===== */
-::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: black;
-    border: 2px solid #ff6b35;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #ff6b35;
-    border: 2px solid white;
-    border-radius: 20px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: white;
-    border-color: #ff6b35;
-    }
