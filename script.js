@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 ZerModz - Full Version');
+    console.log('🔥 ZerModz - FIX TIMER VERSION');
     
-    // ===== DATA PRODUK AWAL (DEFAULT) =====
+    // ===== DATA PRODUK AWAL =====
     const DEFAULT_PRODUCTS = [
         {
             id: 'p1',
             name: 'HOLO ALL CHAR FFM',
             oldPrice: 22000,
-            newPrice: 22000,
+            newPrice: 22000, // Awal sama
             discount: 0,
             timerEnd: null,
             buttonText: '[ ORDER ]'
@@ -32,46 +32,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     ];
 
-    // ===== VALIDASI PRODUK =====
-    function isValidProduct(product) {
-        return product && 
-               typeof product.id === 'string' &&
-               typeof product.name === 'string' &&
-               typeof product.oldPrice === 'number' &&
-               typeof product.newPrice === 'number' &&
-               typeof product.discount === 'number' &&
-               product.oldPrice > 0;
-    }
-
-    // ===== LOAD DATA DARI LOCALSTORAGE =====
+    // ===== LOAD DARI LOCALSTORAGE =====
     function loadProducts() {
         try {
             const saved = localStorage.getItem('zerModzProducts');
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (Array.isArray(parsed) && parsed.length > 0) {
-                    const validProducts = parsed.filter(isValidProduct);
-                    if (validProducts.length > 0) {
-                        validProducts.forEach(p => {
-                            if (p.timerEnd) {
-                                p.timerEnd = new Date(p.timerEnd);
-                                if (p.timerEnd <= new Date()) {
-                                    p.timerEnd = null;
-                                    p.newPrice = p.oldPrice;
-                                    p.discount = 0;
-                                }
-                            }
-                        });
-                        console.log('✅ Load dari LocalStorage:', validProducts.length, 'produk');
-                        return validProducts;
-                    }
+                    // Konversi timerEnd ke Date object
+                    parsed.forEach(p => {
+                        if (p.timerEnd) {
+                            p.timerEnd = new Date(p.timerEnd);
+                        }
+                    });
+                    console.log('✅ Load produk:', parsed.length);
+                    return parsed;
                 }
             }
         } catch (e) {
-            console.error('❌ Gagal load LocalStorage:', e);
+            console.error('❌ Gagal load:', e);
             localStorage.removeItem('zerModzProducts');
         }
-        console.log('📦 Pakai produk default');
         return DEFAULT_PRODUCTS.map(p => ({...p}));
     }
 
@@ -116,9 +97,10 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateClock, 1000);
     updateClock();
 
-    // ===== TIMER PRODUK SETIAP DETIK =====
+    // ===== UPDATE TIMER SETIAP DETIK =====
     function startProductTimers() {
         if (timerInterval) clearInterval(timerInterval);
+        
         timerInterval = setInterval(() => {
             let needRender = false;
             let needSave = false;
@@ -126,41 +108,47 @@ document.addEventListener('DOMContentLoaded', function() {
             
             products.forEach(product => {
                 if (product.timerEnd) {
-                    if (product.timerEnd <= now) {
+                    const timeLeft = product.timerEnd - now;
+                    
+                    // CEK APAKAH TIMER HABIS
+                    if (timeLeft <= 0) {
+                        console.log(`⏰ Timer habis: ${product.name}`);
                         product.newPrice = product.oldPrice;
                         product.discount = 0;
                         product.timerEnd = null;
                         needRender = true;
                         needSave = true;
-                        console.log(`⏰ Timer habis: ${product.name}`);
                     }
                 }
             });
             
             if (needSave) saveProducts();
-            if (needRender) renderProducts();
-            else updateTimerDisplays();
+            if (needRender) {
+                renderProducts();
+            } else {
+                // UPDATE TIMER DI CARD TANPA RENDER ULANG
+                updateTimerDisplays();
+            }
         }, 1000);
     }
 
+    // ===== UPDATE TAMPILAN TIMER =====
     function updateTimerDisplays() {
         const now = new Date();
         products.forEach(product => {
             if (product.timerEnd) {
                 const timeLeft = product.timerEnd - now;
-                const timerEl = document.querySelector(`#product-${product.id} .timer-badge`);
-                if (timerEl) {
-                    if (timeLeft <= 0) timerEl.remove();
-                    else timerEl.innerText = `⏱️ ${formatTimeLeft(timeLeft)}`;
+                const timerElement = document.querySelector(`#product-${product.id} .timer-badge`);
+                
+                if (timerElement) {
+                    if (timeLeft <= 0) {
+                        timerElement.remove();
+                    } else {
+                        timerElement.innerText = `⏱️ ${formatTimeLeft(timeLeft)}`;
+                    }
                 }
             }
         });
-    }
-
-    // ===== WA ORDER =====
-    function handleOrder(productName, productPrice) {
-        const msg = encodeURIComponent(`Halo kak saya mau order ${productName} (Rp ${productPrice.toLocaleString()})`);
-        window.open(`https://wa.me/6289653938936?text=${msg}`, '_blank');
     }
 
     // ===== RENDER PRODUK =====
@@ -172,13 +160,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         grid.innerHTML = '';
-        
-        if (!products || products.length === 0) {
-            products = DEFAULT_PRODUCTS.map(p => ({...p}));
-            saveProducts();
-        }
+        console.log('🎨 Render produk, total:', products.length);
         
         products.forEach(product => {
+            // CEK TIMER EXPIRED
             if (product.timerEnd && new Date() > product.timerEnd) {
                 product.newPrice = product.oldPrice;
                 product.discount = 0;
@@ -190,9 +175,14 @@ document.addEventListener('DOMContentLoaded', function() {
             card.className = 'product';
             card.id = `product-${product.id}`;
             
-            const discPercent = product.oldPrice > 0 ? 
-                Math.round(((product.oldPrice - product.newPrice) / product.oldPrice) * 100) : 0;
+            // HITUNG DISKON PERSEN
+            let discPercent = 0;
+            if (product.oldPrice > 0 && product.newPrice < product.oldPrice) {
+                discPercent = Math.round(((product.oldPrice - product.newPrice) / product.oldPrice) * 100);
+                product.discount = discPercent; // SIMPAN DISKON
+            }
             
+            // TIMER HTML
             let timerHtml = '';
             if (product.timerEnd) {
                 const timeLeft = product.timerEnd - new Date();
@@ -201,13 +191,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
+            // DISKON BADGE
+            let discountHtml = '';
+            if (discPercent > 0) {
+                discountHtml = `<div class="discount-badge">DISKON ${discPercent}%</div>`;
+            }
+            
             card.innerHTML = `
                 <div class="product-name">${product.name}</div>
                 <div class="product-price">
                     <span class="old-price">Rp ${product.oldPrice.toLocaleString()}</span>
                     <span class="new-price">Rp ${product.newPrice.toLocaleString()}</span>
                 </div>
-                ${discPercent > 0 ? `<div class="discount-badge">DISKON ${discPercent}%</div>` : ''}
+                ${discountHtml}
                 ${timerHtml}
                 <button class="order-btn" data-product-id="${product.id}">${product.buttonText || '[ ORDER ]'}</button>
             `;
@@ -215,14 +211,158 @@ document.addEventListener('DOMContentLoaded', function() {
             grid.appendChild(card);
         });
         
+        // PASANG EVENT ORDER
         document.querySelectorAll('.order-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const product = products.find(p => p.id === this.dataset.productId);
-                if (product) handleOrder(product.name, product.newPrice);
+                if (product) {
+                    const msg = encodeURIComponent(`Halo kak saya mau order ${product.name} (Rp ${product.newPrice.toLocaleString()})`);
+                    window.open(`https://wa.me/6289653938936?text=${msg}`, '_blank');
+                }
             });
         });
         
-        console.log('🎨 Render produk:', products.length);
+        console.log('✅ Render selesai');
+    }
+
+    // ===== APPLY DISKON + TIMER =====
+    window.applyDiscTimer = function(productId) {
+        console.log('🏷️ Apply diskon untuk:', productId);
+        
+        const discInput = document.getElementById(`disc_${productId}`);
+        const timerInput = document.getElementById(`timer_${productId}`);
+        const detikInput = document.getElementById(`detik_${productId}`);
+        
+        if (!discInput) {
+            console.error('❌ Input diskon tidak ditemukan!');
+            return;
+        }
+        
+        const disc = discInput.value;
+        const menit = timerInput ? parseInt(timerInput.value) || 0 : 0;
+        const detik = detikInput ? parseInt(detikInput.value) || 0 : 0;
+        
+        const product = products.find(p => p.id === productId);
+        if (!product) {
+            console.error('❌ Produk tidak ditemukan!');
+            return;
+        }
+        
+        const discPercent = parseFloat(disc);
+        if (isNaN(discPercent) || discPercent < 0) {
+            alert('Masukkan angka diskon yang valid!');
+            return;
+        }
+        
+        // HITUNG HARGA BARU
+        if (discPercent >= 100) {
+            product.newPrice = 0;
+        } else {
+            product.newPrice = Math.round(product.oldPrice - (product.oldPrice * discPercent / 100));
+        }
+        
+        product.discount = discPercent;
+        
+        // SET TIMER JIKA ADA
+        if (menit > 0 || detik > 0) {
+            const totalDetik = (menit * 60) + detik;
+            product.timerEnd = new Date(Date.now() + (totalDetik * 1000));
+            console.log(`⏰ Timer set: ${menit}m ${detik}s (${totalDetik} detik)`);
+        } else {
+            product.timerEnd = null;
+        }
+        
+        // SIMPAN DAN RENDER ULANG
+        saveProducts();
+        renderProducts();
+        
+        // RELOAD ADMIN PANEL JIKA TERBUKA
+        if (!document.getElementById('adminPanelContainer').classList.contains('hidden')) {
+            loadAdminPanel();
+        }
+        
+        console.log(`✅ Diskon ${discPercent}% diterapkan, harga: Rp ${product.newPrice}`);
+    };
+
+    // ===== FUNGSI GLOBAL LAINNYA =====
+    window.deleteProduct = function(id) {
+        if (confirm('Hapus produk ini?')) {
+            products = products.filter(p => p.id !== id);
+            saveProducts();
+            renderProducts();
+            if (!document.getElementById('adminPanelContainer').classList.contains('hidden')) {
+                loadAdminPanel();
+            }
+        }
+    };
+
+    window.updatePrice = function(id) {
+        const price = parseInt(document.getElementById(`price_${id}`)?.value);
+        const product = products.find(p => p.id === id);
+        if (product && !isNaN(price) && price > 0) {
+            product.oldPrice = price;
+            if (!product.timerEnd) {
+                product.newPrice = price;
+                product.discount = 0;
+            }
+            saveProducts();
+            renderProducts();
+            if (!document.getElementById('adminPanelContainer').classList.contains('hidden')) {
+                loadAdminPanel();
+            }
+        }
+    };
+
+    window.updateProductName = function(id) {
+        const name = document.getElementById(`name_${id}`)?.value.trim();
+        const product = products.find(p => p.id === id);
+        if (product && name) {
+            product.name = name;
+            saveProducts();
+            renderProducts();
+            if (!document.getElementById('adminPanelContainer').classList.contains('hidden')) {
+                loadAdminPanel();
+            }
+        }
+    };
+
+    window.updateButtonText = function(id) {
+        const text = document.getElementById(`btn_${id}`)?.value.trim() || '[ ORDER ]';
+        const product = products.find(p => p.id === id);
+        if (product) {
+            product.buttonText = text;
+            saveProducts();
+            renderProducts();
+            if (!document.getElementById('adminPanelContainer').classList.contains('hidden')) {
+                loadAdminPanel();
+            }
+        }
+    };
+
+    window.resetToDefault = function() {
+        if (confirm('Reset ke data awal? Semua perubahan akan hilang!')) {
+            products = DEFAULT_PRODUCTS.map(p => ({...p}));
+            saveProducts();
+            renderProducts();
+            if (!document.getElementById('adminPanelContainer').classList.contains('hidden')) {
+                loadAdminPanel();
+            }
+        }
+    };
+
+    function addProduct(name, price, buttonText) {
+        const newId = 'p' + Date.now() + Math.random().toString(36).substr(2, 4);
+        products.push({
+            id: newId,
+            name: name,
+            oldPrice: parseInt(price),
+            newPrice: parseInt(price),
+            discount: 0,
+            timerEnd: null,
+            buttonText: buttonText || '[ ORDER ]'
+        });
+        saveProducts();
+        renderProducts();
     }
 
     // ===== MODAL LOGIN =====
@@ -271,7 +411,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!panelBody) return;
         
         panelBody.innerHTML = `
-            <!-- TAMBAH PRODUK -->
             <div class="admin-section">
                 <div class="admin-section-title">➕ TAMBAH PRODUK</div>
                 <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
@@ -282,7 +421,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
             
-            <!-- OFFSET WAKTU -->
             <div class="admin-section">
                 <div class="admin-section-title">⏱️ OFFSET WAKTU</div>
                 <div class="admin-row">
@@ -294,37 +432,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
             
-            <!-- RESET DATA -->
             <div class="admin-section">
                 <div class="admin-section-title">⚠️ RESET DATA</div>
-                <button id="resetToDefaultBtn" class="admin-btn warn" style="width:100%;">RESET KE AWAL</button>
+                <button id="resetToDefaultBtn" class="admin-btn warn" style="width:100%; padding:0.8rem;">RESET KE AWAL</button>
             </div>
             
-            <!-- DAFTAR PRODUK -->
             <div class="admin-section">
                 <div class="admin-section-title">📦 DAFTAR PRODUK (${products.length})</div>
                 <div id="productListContainer" style="max-height:300px; overflow-y:auto;"></div>
             </div>
             
-            <!-- DISKON + TIMER -->
             <div class="admin-section">
-                <div class="admin-section-title">🏷️ DISKON + TIMER (JAM:MENIT:DETIK)</div>
+                <div class="admin-section-title">🏷️ DISKON + TIMER</div>
                 <div id="discountControlContainer"></div>
             </div>
             
-            <!-- EDIT HARGA -->
             <div class="admin-section">
                 <div class="admin-section-title">💰 EDIT HARGA</div>
                 <div id="priceEditContainer"></div>
             </div>
 
-            <!-- EDIT NAMA PRODUK -->
             <div class="admin-section">
                 <div class="admin-section-title">✏️ EDIT NAMA PRODUK</div>
                 <div id="productNameEditContainer"></div>
             </div>
 
-            <!-- EDIT TEKS BUTTON -->
             <div class="admin-section">
                 <div class="admin-section-title">🔘 EDIT TEKS BUTTON</div>
                 <div id="buttonTextContainer"></div>
@@ -337,7 +469,6 @@ document.addEventListener('DOMContentLoaded', function() {
         renderProductNameControls();
         renderButtonTextControls();
 
-        // EVENT LISTENERS
         document.getElementById('applyOffsetBtn')?.addEventListener('click', () => {
             const val = parseInt(document.getElementById('offsetInput').value);
             if (!isNaN(val)) {
@@ -360,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        document.getElementById('resetToDefaultBtn')?.addEventListener('click', resetToDefault);
+        document.getElementById('resetToDefaultBtn')?.addEventListener('click', window.resetToDefault);
         document.getElementById('logoutBtn')?.addEventListener('click', () => {
             adminPanelContainer.classList.add('hidden');
         });
@@ -464,100 +595,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== FUNGSI GLOBAL =====
-    window.deleteProduct = function(id) {
-        if (confirm('Hapus produk ini?')) {
-            products = products.filter(p => p.id !== id);
-            saveProducts();
-            renderProducts();
-            if (!adminPanelContainer.classList.contains('hidden')) loadAdminPanel();
-        }
-    };
-
-    window.applyDiscTimer = function(id) {
-        const disc = document.getElementById(`disc_${id}`)?.value || 0;
-        const menit = parseInt(document.getElementById(`timer_${id}`)?.value) || 0;
-        const detik = parseInt(document.getElementById(`detik_${id}`)?.value) || 0;
-        const product = products.find(p => p.id === id);
-        
-        if (product) {
-            const discPercent = parseFloat(disc);
-            if (!isNaN(discPercent) && discPercent >= 0) {
-                product.discount = discPercent;
-                product.newPrice = discPercent >= 100 ? 0 : 
-                    Math.round(product.oldPrice - (product.oldPrice * discPercent / 100));
-                
-                if (menit > 0 || detik > 0) {
-                    product.timerEnd = new Date(Date.now() + (menit * 60 + detik) * 1000);
-                }
-                
-                saveProducts();
-                renderProducts();
-                if (!adminPanelContainer.classList.contains('hidden')) loadAdminPanel();
-            }
-        }
-    };
-
-    window.updatePrice = function(id) {
-        const price = parseInt(document.getElementById(`price_${id}`)?.value);
-        const product = products.find(p => p.id === id);
-        if (product && !isNaN(price) && price > 0) {
-            product.oldPrice = price;
-            if (!product.timerEnd) product.newPrice = price;
-            saveProducts();
-            renderProducts();
-            if (!adminPanelContainer.classList.contains('hidden')) loadAdminPanel();
-        }
-    };
-
-    window.updateProductName = function(id) {
-        const name = document.getElementById(`name_${id}`)?.value.trim();
-        const product = products.find(p => p.id === id);
-        if (product && name) {
-            product.name = name;
-            saveProducts();
-            renderProducts();
-            if (!adminPanelContainer.classList.contains('hidden')) loadAdminPanel();
-        }
-    };
-
-    window.updateButtonText = function(id) {
-        const text = document.getElementById(`btn_${id}`)?.value.trim() || '[ ORDER ]';
-        const product = products.find(p => p.id === id);
-        if (product) {
-            product.buttonText = text;
-            saveProducts();
-            renderProducts();
-            if (!adminPanelContainer.classList.contains('hidden')) loadAdminPanel();
-        }
-    };
-
-    window.resetToDefault = function() {
-        if (confirm('Reset ke data awal? Semua perubahan akan hilang!')) {
-            products = DEFAULT_PRODUCTS.map(p => ({...p}));
-            saveProducts();
-            renderProducts();
-            if (!adminPanelContainer.classList.contains('hidden')) loadAdminPanel();
-        }
-    };
-
-    function addProduct(name, price, buttonText) {
-        const newId = 'p' + Date.now() + Math.random().toString(36).substr(2, 4);
-        products.push({
-            id: newId,
-            name: name,
-            oldPrice: parseInt(price),
-            newPrice: parseInt(price),
-            discount: 0,
-            timerEnd: null,
-            buttonText: buttonText
-        });
-        saveProducts();
-        renderProducts();
-    }
-
-    // ===== START =====
+    // ===== START SEMUA =====
     startProductTimers();
     renderProducts();
-    console.log('✅ Full version siap!');
+    console.log('✅ FIX TIMER VERSION SIAP!');
 });
