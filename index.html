@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- HEADER: LOGO + REAL TIME + ADMIN PROFIL -->
+        <!-- HEADER -->
         <div class="header">
             <div class="logo">
                 <span class="zer">Zer</span><span class="modz">Modz</span>
@@ -18,7 +18,6 @@
                     <span id="clock">12:34:56</span>
                     <span id="date">Sen, 12 Feb 2026</span>
                 </div>
-                <!-- ADMIN PROFIL BUTTON -->
                 <div id="adminProfileBtn" class="admin-profile">
                     <span class="profile-icon">⚡</span>
                     <span class="profile-text">ADMIN</span>
@@ -26,7 +25,7 @@
             </div>
         </div>
 
-        <!-- MODAL LOGIN (POPUP) -->
+        <!-- MODAL LOGIN -->
         <div id="loginModal" class="modal hidden">
             <div class="modal-content">
                 <div class="modal-header">
@@ -35,31 +34,30 @@
                     <span id="closeModalBtn" class="close-btn">✕</span>
                 </div>
                 <div class="modal-body">
-                    <input type="text" id="username" placeholder="username" autocomplete="off">
-                    <input type="password" id="password" placeholder="password" autocomplete="off">
+                    <input type="text" id="username" placeholder="username">
+                    <input type="password" id="password" placeholder="password">
                     <button id="loginBtn">MASUK</button>
                     <div id="loginMessage" class="login-message"></div>
                 </div>
             </div>
         </div>
 
-        <!-- PRODUCT GRID - DINAMIS -->
+        <!-- PRODUCT GRID - PASTI INI! -->
         <div id="productGrid" class="product-grid">
-            <!-- Akan diisi JavaScript -->
+            <!-- AKAN DIISI JAVASCRIPT -->
         </div>
 
-        <!-- ADMIN PANEL ASLI (MUNCUL SETELAH LOGIN, DI BAWAH PRODUK) -->
+        <!-- ADMIN PANEL -->
         <div id="adminPanelContainer" class="admin-panel-container hidden">
             <div class="admin-panel-header">
                 <span>⚙️ ADMIN PANEL</span>
                 <button id="logoutBtn" class="admin-logout-btn">[ LOGOUT ]</button>
             </div>
             <div id="adminPanelBody" class="admin-panel-body">
-                <!-- Akan diisi JavaScript -->
+                <!-- DIISI JS -->
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
